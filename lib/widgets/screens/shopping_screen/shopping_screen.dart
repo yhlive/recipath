@@ -27,6 +27,7 @@ import 'package:recipath/widgets/screens/shopping_screen/providers/shopping_scre
 import 'package:recipath/widgets/screens/shopping_screen/quick_shopping_item.dart';
 import 'package:recipath/widgets/screens/shopping_screen/shopping_empty_state.dart';
 import 'package:recipath/widgets/screens/shopping_screen/shopping_item.dart';
+import 'package:recipath/widgets/screens/shopping_screen/shopping_session_widgets.dart';
 import 'package:recipath/widgets/tag/tag_cluster_header.dart';
 
 class ShoppingScreen extends ConsumerStatefulWidget {
@@ -38,6 +39,7 @@ class ShoppingScreen extends ConsumerStatefulWidget {
 
 class _ShoppingScreenState extends ConsumerState<ShoppingScreen> {
   final searchController = TextEditingController();
+  bool _remainingOnly = false;
 
   @override
   void dispose() {
@@ -114,9 +116,13 @@ class _ShoppingScreenState extends ConsumerState<ShoppingScreen> {
         builder: (data) => ClusteredSearchableList(
           searchController: searchController,
           name: localization.items,
+          header: data.progress.total == 0
+              ? null
+              : ShoppingProgressBar(progress: data.progress),
           clusters: [
             for (final entry in data.clusteredData.entries)
-              ItemCluster(id: entry.key, items: entry.value),
+              if (!_remainingOnly || entry.key != ShoppingTypeEnum.done.name)
+                ItemCluster(id: entry.key, items: entry.value),
           ],
           clusterToWidget: (clusterId) {
             if (data.clusteredData.length == 1 &&
@@ -164,32 +170,65 @@ class _ShoppingScreenState extends ConsumerState<ShoppingScreen> {
                 data.groceryMap[a.data.ingredient.groceryId]!.name,
               QuickShoppingItemData() => a.data.description,
             };
-            final bString = switch (a) {
+            final bString = switch (b) {
               ShoppingItemData() =>
-                data.groceryMap[a.data.ingredient.groceryId]!.name,
-              QuickShoppingItemData() => a.data.description,
+                data.groceryMap[b.data.ingredient.groceryId]!.name,
+              QuickShoppingItemData() => b.data.description,
             };
 
             return aString.compareTo(bString);
           },
-          trailingSearch: FilterButton(
-            filterType: FilterTypeEnum.shopping,
-            quickFilters: [QuickFilters.cluster],
+          trailingSearch: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                tooltip: localization.shoppingSessionRemaining,
+                icon: const Icon(Icons.filter_alt_outlined),
+                selectedIcon: const Icon(Icons.filter_alt),
+                isSelected: _remainingOnly,
+                onPressed: () {
+                  setState(() {
+                    _remainingOnly = !_remainingOnly;
+                  });
+                },
+              ),
+              FilterButton(
+                filterType: FilterTypeEnum.shopping,
+                quickFilters: [QuickFilters.cluster],
+              ),
+            ],
           ),
           listViewPadding: edgeInsetsWithBottomPadding(context: context),
           trailingList: data.tagFiltersActive ? null : AddQuickShoppingItem(),
-          clusterEmptyState: Center(
-            child: Column(
-              mainAxisSize: .min,
-              children: [
-                EmptyState(
-                  hint: localization.shoppingHint,
-                  onTap: () => context.go(RootRoutes.recipeRoute.path),
+          clusterEmptyState: data.progress.total == 0
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      EmptyState(
+                        hint: localization.shoppingHint,
+                        onTap: () => context.go(RootRoutes.recipeRoute.path),
+                      ),
+                      if (!data.tagFiltersActive) AddQuickShoppingItem(),
+                    ],
+                  ),
+                )
+              : ShoppingSessionEmpty(
+                  allChecked:
+                      _remainingOnly &&
+                      !data.tagFiltersActive &&
+                      data.progress.checked == data.progress.total,
+                  onShowAll: !_remainingOnly
+                      ? null
+                      : () {
+                          setState(() {
+                            _remainingOnly = false;
+                          });
+                        },
+                  quickAdd: data.tagFiltersActive
+                      ? null
+                      : AddQuickShoppingItem(),
                 ),
-                if (!data.tagFiltersActive) AddQuickShoppingItem(),
-              ],
-            ),
-          ),
           searchEmptyState: (search) =>
               ShoppingEmptyState(search: search, state: data),
         ),

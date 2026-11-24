@@ -209,6 +209,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shoppingList => 'Shopping list';
 
   @override
+  String shoppingSessionProgress(int checked, int total, int remaining) {
+    return '$checked of $total checked · $remaining left';
+  }
+
+  @override
+  String get shoppingSessionRemaining => 'Only remaining';
+
+  @override
+  String get shoppingSessionShowAll => 'Show all items';
+
+  @override
+  String get shoppingSessionAllChecked => 'All items checked';
+
+  @override
+  String get shoppingSessionNoMatch => 'No shopping items match these filters.';
+
+  @override
   String get storage => 'Storage';
 
   @override

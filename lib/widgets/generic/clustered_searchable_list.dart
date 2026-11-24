@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:recipath/l10n/app_localizations.dart';
 import 'package:recipath/widgets/generic/empty_state.dart';
 import 'package:recipath/widgets/generic/highlight_search/highlight_scope.dart';
+import 'package:recipath/widgets/generic/search_text.dart';
 import 'package:recipath/widgets/generic/search_text_field.dart';
 
 class ClusteredSearchableList<T, R> extends StatefulWidget {
@@ -16,6 +17,7 @@ class ClusteredSearchableList<T, R> extends StatefulWidget {
     required this.clusterToWidget,
     this.sortItems,
     this.sortClusters,
+    this.header,
     this.trailingSearch,
     this.trailingList,
     this.clusterEmptyState,
@@ -37,6 +39,7 @@ class ClusteredSearchableList<T, R> extends StatefulWidget {
   final int Function(T a, T b)? sortItems;
   final int Function(R a, R b)? sortClusters;
 
+  final Widget? header;
   final Widget? trailingSearch;
   final Widget? clusterEmptyState;
   final Widget Function(String search)? searchEmptyState;
@@ -101,7 +104,10 @@ class _ClusteredSearchableListState<T, R>
         cluster.id:
             cluster.items
                 .map<({T item, String search})>(
-                  (e) => (item: e, search: widget.itemToSearchable(e)),
+                  (e) => (
+                    item: e,
+                    search: indexSearchText(widget.itemToSearchable(e)),
+                  ),
                 )
                 .toList()
               ..sort((a, b) => widget.sortItems?.call(a.item, b.item) ?? 0),
@@ -112,6 +118,7 @@ class _ClusteredSearchableListState<T, R>
   Widget build(BuildContext context) {
     final localization = AppLocalizations.of(context)!;
 
+    final query = prepareSearchQuery(search);
     late Map<R, List<T>> clusters;
 
     if (search == "") {
@@ -123,9 +130,7 @@ class _ClusteredSearchableListState<T, R>
       clusters = {
         for (final entry in searchable.entries)
           entry.key: entry.value
-              .where(
-                (e) => e.search.toLowerCase().contains(search.toLowerCase()),
-              )
+              .where((e) => matchesSearchText(e.search, query))
               .map((e) => e.item)
               .toList(),
       };
@@ -180,6 +185,7 @@ class _ClusteredSearchableListState<T, R>
       highlightTerm: search,
       child: Column(
         children: [
+          ?widget.header,
           Row(
             children: [
               Expanded(
