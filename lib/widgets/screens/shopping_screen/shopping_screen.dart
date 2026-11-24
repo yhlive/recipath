@@ -29,7 +29,6 @@ import 'package:recipath/widgets/screens/shopping_screen/shopping_empty_state.da
 import 'package:recipath/widgets/screens/shopping_screen/shopping_item.dart';
 import 'package:recipath/widgets/screens/shopping_screen/shopping_session_widgets.dart';
 import 'package:recipath/widgets/tag/tag_cluster_header.dart';
-import 'package:timezone/timezone.dart';
 
 class ShoppingScreen extends ConsumerStatefulWidget {
   const ShoppingScreen({super.key});
