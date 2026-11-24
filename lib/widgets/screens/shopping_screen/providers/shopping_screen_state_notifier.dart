@@ -12,6 +12,8 @@ import 'package:recipath/widgets/screens/recipe_screen/providers/quick_filter_no
 import 'package:recipath/widgets/screens/shopping_screen/data/shopping_item_data.dart';
 import 'package:recipath/widgets/screens/shopping_screen/providers/filtered_shopping_notifier.dart';
 import 'package:recipath/widgets/screens/shopping_screen/providers/quick_shopping_notifier.dart';
+import 'package:recipath/widgets/screens/shopping_screen/providers/shopping_notifier.dart';
+import 'package:recipath/widgets/screens/shopping_screen/shopping_progress.dart';
 import 'package:recipath/widgets/screens/storage_screen/providers/storage_notifier.dart';
 import 'package:recipath/widgets/screens/tag_screen/providers/tag_notifier.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -29,6 +31,13 @@ Future<ShoppingScreenState> shoppingScreenStateNotifier(Ref ref) async {
 
   final shoppingData = await ref.watch(filteredShoppingProvider.future);
   final quickShoppingData = await ref.watch(quickShoppingProvider.future);
+  final allShoppingData = tagFiltersActive
+      ? await ref.watch(shoppingProvider.future)
+      : shoppingData;
+  final progress = countShoppingProgress([
+    ...allShoppingData.values.map((e) => e.done),
+    ...quickShoppingData.values.map((e) => e.done),
+  ]);
 
   final Map<String, List<BaseShoppingItemData>> clusteredData = {};
 
@@ -97,6 +106,7 @@ Future<ShoppingScreenState> shoppingScreenStateNotifier(Ref ref) async {
     storage: await ref.watch(storageProvider.future),
     tags: await ref.watch(tagProvider.future),
     tagFiltersActive: tagFiltersActive,
+    progress: progress,
   );
 }
 
@@ -107,6 +117,7 @@ class ShoppingScreenState {
     required this.storage,
     required this.tags,
     required this.tagFiltersActive,
+    required this.progress,
   });
 
   final Map<String, List<BaseShoppingItemData>> clusteredData;
@@ -114,4 +125,5 @@ class ShoppingScreenState {
   final IMap<String, StorageData> storage;
   final IMap<String, TagData> tags;
   final bool tagFiltersActive;
+  final ShoppingProgress progress;
 }
