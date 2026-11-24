@@ -85,6 +85,18 @@
     "baseValue": "Base value",
     "recipes": "Recipes",
     "shoppingList": "Shopping list",
+    "shoppingSessionProgress": "{checked} of {total} checked · {remaining} left",
+    "@shoppingSessionProgress": {
+        "placeholders": {
+            "checked": {"type": "int"},
+            "total": {"type": "int"},
+            "remaining": {"type": "int"}
+        }
+    },
+    "shoppingSessionRemaining": "Only remaining",
+    "shoppingSessionShowAll": "Show all items",
+    "shoppingSessionAllChecked": "All items checked",
+    "shoppingSessionNoMatch": "No shopping items match these filters.",
     "storage": "Storage",
     "groceries": "Groceries",
     "tags": "Tags",

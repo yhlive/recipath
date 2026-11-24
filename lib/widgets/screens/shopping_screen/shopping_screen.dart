@@ -27,6 +27,7 @@ import 'package:recipath/widgets/screens/shopping_screen/providers/shopping_scre
 import 'package:recipath/widgets/screens/shopping_screen/quick_shopping_item.dart';
 import 'package:recipath/widgets/screens/shopping_screen/shopping_empty_state.dart';
 import 'package:recipath/widgets/screens/shopping_screen/shopping_item.dart';
+import 'package:recipath/widgets/screens/shopping_screen/shopping_session_widgets.dart';
 import 'package:recipath/widgets/tag/tag_cluster_header.dart';
 
 class ShoppingScreen extends ConsumerStatefulWidget {
@@ -114,6 +115,11 @@ class _ShoppingScreenState extends ConsumerState<ShoppingScreen> {
         builder: (data) => ClusteredSearchableList(
           searchController: searchController,
           name: localization.items,
+          header: data.progress.total == 0
+              ? null
+              : ShoppingProgressBar(
+                  progress: data.progress,
+                ),
           clusters: [
             for (final entry in data.clusteredData.entries)
               ItemCluster(id: entry.key, items: entry.value),

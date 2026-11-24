@@ -470,6 +470,36 @@ abstract class AppLocalizations {
   /// **'Shopping list'**
   String get shoppingList;
 
+  /// No description provided for @shoppingSessionProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{checked} of {total} checked · {remaining} left'**
+  String shoppingSessionProgress(int checked, int total, int remaining);
+
+  /// No description provided for @shoppingSessionRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Only remaining'**
+  String get shoppingSessionRemaining;
+
+  /// No description provided for @shoppingSessionShowAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all items'**
+  String get shoppingSessionShowAll;
+
+  /// No description provided for @shoppingSessionAllChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'All items checked'**
+  String get shoppingSessionAllChecked;
+
+  /// No description provided for @shoppingSessionNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No shopping items match these filters.'**
+  String get shoppingSessionNoMatch;
+
   /// No description provided for @storage.
   ///
   /// In en, this message translates to:
